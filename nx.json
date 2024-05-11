@@ -1,22 +1,14 @@
 {
-  "installation": {
-    "version": "19.0.2"
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
+    "production": [
+      "default"
+    ],
+    "sharedGlobals": []
   },
-  "plugins": [
-    {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
-      }
-    },
-    {
-      "plugin": "@nx/jest/plugin",
-      "options": {
-        "targetName": "test"
-      }
-    }
-  ],
-  "release": {
-    "projects": ["*"]
-  }
+  "nxCloudAccessToken": "YTNkMTVkMTAtZDkwZS00MzQ4LWFkNjItNTk4YjgzZWE0ODMzfHJlYWQtd3JpdGU="
 }
