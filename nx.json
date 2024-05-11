@@ -1,0 +1,22 @@
+{
+  "installation": {
+    "version": "19.0.2"
+  },
+  "plugins": [
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    },
+    {
+      "plugin": "@nx/jest/plugin",
+      "options": {
+        "targetName": "test"
+      }
+    }
+  ],
+  "release": {
+    "projects": ["*"]
+  }
+}
