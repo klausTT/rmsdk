@@ -1,5 +1,5 @@
-import isEmpty from "lodash/isEmpty";
-
+import isEmpty from 'lodash/isEmpty';
+import { add } from '@rmsdk/request';
 import {
   baseApiKeyList,
   IGNORE_API_NAME,
@@ -10,10 +10,12 @@ import {
   Api,
   ApiName,
   OpenApi,
-} from "./types";
+} from './types';
 
 // 市场集合
 const marketSet = new Set([MARKET_HK, MARKET_US, MARKET_HS, MARKET_US_OPTION]);
+
+console.log(add(1, 2));
 
 /**
  * 解析OpenAPI文档
@@ -32,7 +34,7 @@ export class ParseOpenAPI {
     const apiKeyList = [...baseApiKeyList];
     // 按照apiPath进行处理
     Object.entries(paths).forEach(([path, pathObj]) => {
-      const pathList = path.split("/");
+      const pathList = path.split('/');
 
       // 查找版本号位置
       const vIndex = pathList.findIndex((p) => /^v\d+$/.test(p));
@@ -43,13 +45,13 @@ export class ParseOpenAPI {
       const method: string = Object.keys(pathObj)[0];
 
       // 获取当前api对应市场
-      let market = "";
+      let market = '';
       for (let i = 0; i < vIndex; i += 1) {
         if (marketSet.has(pathList[i])) {
           market = pathList[i];
           // 期权特殊处理
-          if (pathList[i - 1] === "option") {
-            market += "Option";
+          if (pathList[i - 1] === 'option') {
+            market += 'Option';
           }
           break;
         }
@@ -63,19 +65,19 @@ export class ParseOpenAPI {
        * 如 /stock/hk/ss/v1/etf/list
        * apiPrefix = stock/hk/ss
        */
-      const apiPrefix = pathList.slice(1, vIndex).join("/");
+      const apiPrefix = pathList.slice(1, vIndex).join('/');
       /**
        * 获取api真实路径
        *
        * 如 /stock/hk/ss/v1/etf/list
        * apiPath = etf/list
        */
-      const apiPath = pathList.slice(vIndex + 1).join("/");
+      const apiPath = pathList.slice(vIndex + 1).join('/');
 
       // 获取api名称
       //! TODO: 第一优先采用 URL 无关的请求键生成策略，目前碍于现有设计，不得不与 URL 硬性关联
-      let apiName = `${apiPathList.join("_")}${
-        market ? `_${market}` : ""
+      let apiName = `${apiPathList.join('_')}${
+        market ? `_${market}` : ''
       }` as ApiName;
 
       /**
@@ -84,7 +86,7 @@ export class ParseOpenAPI {
        * 手动汇总f10项目相关接口（包括f10接口和非f10接口），自动在apiName
        * 上拼接【f10】字符
        */
-      if (apiPrefix.includes("/f10")) {
+      if (apiPrefix.includes('/f10')) {
         apiName = `f10_${apiName}`;
       }
 
@@ -97,7 +99,7 @@ export class ParseOpenAPI {
       const apiBody = pathObj[method as keyof typeof pathObj];
 
       // 获取api url参数
-      const parameters: Api["parameters"] = {};
+      const parameters: Api['parameters'] = {};
       const { summary, description } = apiBody;
       const apiParams = apiBody.parameters;
       apiParams?.forEach(({ name, description: des, required }) => {
@@ -108,16 +110,16 @@ export class ParseOpenAPI {
       });
 
       // 获取api requestBody参数
-      let requestBody: Api["requestBody"] = {};
+      let requestBody: Api['requestBody'] = {};
 
       const schemaObj =
-        apiBody.requestBody?.content["application/json"]?.schema;
+        apiBody.requestBody?.content['application/json']?.schema;
       // 获取实体类型结构索引key
-      const key = schemaObj?.$ref?.split("/")?.pop();
+      const key = schemaObj?.$ref?.split('/')?.pop();
       // 获取实体类型
       const _properties = schemaObj?.properties;
       // schema同级的example
-      const example = apiBody.requestBody?.content["application/json"]?.example;
+      const example = apiBody.requestBody?.content['application/json']?.example;
 
       /**
        * properties存在时，优先取properties的值
@@ -146,7 +148,7 @@ export class ParseOpenAPI {
         Object.entries(example).forEach(([k, val]) => {
           requestBody[k] = {
             type: typeof val,
-            description: "",
+            description: '',
             examples: [val],
           };
         });
